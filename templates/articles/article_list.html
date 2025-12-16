@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Все статьи - Мини-сервис статей{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="article-title">📚 Все статьи</h1>
+    <a href="{% url 'article_create' %}" class="btn btn-primary">
+        ➕ Создать статью
+    </a>
+</div>
+
+{% if articles %}
+    <div class="row">
+        {% for article in articles %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ article.title }}</h5>
+                    <p class="text-muted small mb-3">
+                        📅 Создано: {{ article.created_at|date:"d.m.Y H:i" }}
+                    </p>
+                    <p class="card-text">
+                        {{ article.content|truncatewords:25|linebreaks }}
+                    </p>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'article_detail' article.pk %}"
+                           class="btn btn-sm btn-outline-primary">
+                            👁️ Просмотреть
+                        </a>
+                        <a href="{% url 'article_edit' article.pk %}"
+                           class="btn btn-sm btn-outline-secondary">
+                            ✏️ Редактировать
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <nav aria-label="Навигация по страницам">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">« Назад</a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Вперед »</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info text-center">
+        <h4 class="alert-heading">Статей пока нет!</h4>
+        <p>Вы можете создать первую статью прямо сейчас.</p>
+        <hr>
+        <a href="{% url 'article_create' %}" class="btn btn-primary">
+            ➕ Создать первую статью
+        </a>
+    </div>
+{% endif %}
+{% endblock %}
